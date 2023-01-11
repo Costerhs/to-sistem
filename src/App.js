@@ -10,7 +10,7 @@ const App = () => {
   const locat = useLocation();
   const [location, setLocation] = useState(false);
   const navigate = useNavigate();
-  console.log(getCookie('token'))
+  // console.log(getCookie('token'))
   useEffect(() => {
     if (!getCookie('token')) {
       navigate('auth')

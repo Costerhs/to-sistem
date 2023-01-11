@@ -4,11 +4,6 @@ import { getCookie } from '../../assest/defFunction';
 import { NavLink } from 'react-router-dom';
 
 const Header = () => {
-
-    const logOut = () => {
-        
-    }
-
     return (
         <div className='head'>
             <div className="container">

@@ -24,4 +24,11 @@ const getData = () => {
     return formattedDate
 }
 
-export { setCookie, getCookie, deleteCookie, getData }
+const getFilled = (obj) => {
+    Object.entries(obj).map(el => {
+        if (!el[1]) delete obj[el[0]]
+    })
+    return obj
+}
+
+export { setCookie, getCookie, deleteCookie, getData, getFilled }

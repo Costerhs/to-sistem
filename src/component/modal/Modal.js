@@ -1,9 +1,14 @@
 import { useForm } from 'react-hook-form';
 import './style.scss'
 import { AiFillCloseCircle } from "react-icons/ai";
-import { useEffect } from 'react';
 import { todoApi } from '../../assest/api';
-const Modal = ({ setToggle }) => {
+import { useEffect, useState } from 'react';
+import { getFilled } from '../../assest/defFunction';
+import { default as modal } from 'sweetalert2';
+
+const Modal = ({ setToggle, getTodos, toggle, setIsLoad }) => {
+    const [todo, setTodo] = useState();
+    const isNumber = typeof toggle === 'number'
     const {
         register,
         formState: { errors },
@@ -11,11 +16,38 @@ const Modal = ({ setToggle }) => {
     } = useForm({
         mode: 'onClick',
     });
-    const onSubmit = (data) => {
-        todoApi.postTodo(data)
-        // console.log(data)
+    const closeAndShowModal = (title) => {
+        setToggle(false)
+        modal.fire({
+            position: 'center',
+            icon: 'success',
+            title: `Успешно ${title}.`,
+            showConfirmButton: false,
+            timer: 1000
+        })
     }
-
+    const onSubmit = (data) => {
+        setIsLoad(true)
+        if (isNumber) {
+            todoApi.editTodo(getFilled(data), toggle, getTodos)
+                .then(async () => {
+                    await getTodos()
+                    closeAndShowModal('изменено')
+                })
+        } else {
+            todoApi.postTodo(data, getTodos).then(() => {
+                closeAndShowModal('добавлено')
+            })
+        }
+    }
+    useEffect(() => {
+        if (isNumber) {
+            setIsLoad(true)
+            todoApi.getTodo(toggle)
+                .then(res => setTodo(res))
+            setIsLoad(false)
+        }
+    }, [])
     return (
         <div className='modal'>
             <form className="modal__form" onSubmit={handleSubmit(onSubmit)}>
@@ -25,12 +57,12 @@ const Modal = ({ setToggle }) => {
                 </div>
                 <div className="modal__item">
                     <label htmlFor="title" className="modal__label lable__title">Title</label>
-                    <input type="text" className="modal__input input__title" {...register('title', { required: 'это поле обязательна', maxLength: { value: 55, message: 'максимум 55 символов' } })} />
+                    <input type="text" placeholder={todo?.title && todo.title} className="modal__input input__title" {...register('title', { required: 'это поле обязательна', maxLength: { value: 55, message: 'максимум 55 символов' } })} />
                     {errors?.title?.message && <p className="form__error">{errors?.title.message}</p>}
                 </div>
                 <div className="modal__item">
                     <label htmlFor="description" className="modal__label lable__description">Description</label>
-                    <textarea type="text" className="modal__input textarea__description" {...register('description')} />
+                    <textarea type="text" placeholder={todo?.description && todo.description} className="modal__input textarea__description" {...register('description')} />
                 </div>
                 <div className="modal__btn">
                     <button type='submit'>Submit</button>

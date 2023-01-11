@@ -1,16 +1,8 @@
-import { useEffect, useState } from 'react'
-import { todoApi } from '../../assest/api';
+import { useEffect } from 'react'
 import TodoItem from './item/TodoItem'
 import './style.scss'
 
-const TodoList = () => {
-    const [todos, setTodos] = useState([]);
-    const getTodos = () => {
-        todoApi.getTodos()
-            .then(res => {
-                setTodos(res)
-            })
-    }
+const TodoList = ({ getTodos, todos, setToggle }) => {
     useEffect(() => {
         getTodos()
     }, [])
@@ -18,8 +10,8 @@ const TodoList = () => {
     return (
         <div className='todo__list'>
             {todos && todos.length > 0 ? todos.map((el, ind) => {
-                return <TodoItem getTodos={getTodos} id={el.id} title={el.title} description={el.description} key={ind} />
-            }) : null}
+                return <TodoItem setToggle={setToggle} getTodos={getTodos} id={el.id} title={el.title} description={el.description} key={ind} />
+            }) : <h1>Задачи отсутствуют</h1>}
         </div>
     )
 }

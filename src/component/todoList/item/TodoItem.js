@@ -1,27 +1,37 @@
 import './style.scss'
-import React from 'react'
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import { todoApi } from '../../../assest/api';
-import { default as Modal } from 'sweetalert2';
+import { default as modal } from 'sweetalert2';
+import { BiShowAlt } from "react-icons/bi";
 
-const TodoItem = ({ id, title, description, getTodos }) => {
+const TodoItem = ({ id, title, description, getTodos, setToggle }) => {
     const delTodo = (e) => {
-        todoApi.delTodo(id)
-            .then(() => {
-                getTodos()
-                Modal.fire({
-                    position: 'center',
-                    icon: 'success',
-                    title: 'Успешно удалено',
-                    timer: 1500,
-                    showConfirmButton: false
-                })
-            })
+        modal.fire({
+            title: 'Вы уверены?',
+            text: "Вы не сможете вернуть данные!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Да, удалить!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                todoApi.delTodo(id)
+                    .then(() => {
+                        getTodos()
+                        modal.fire(
+                            'Удалено!',
+                            'Данные успешно удалены.',
+                            'success'
+                        )
+                    })
+            }
+        })
         e.stopPropagation()
     }
     const edit = (e) => {
+        setToggle(id)
         e.stopPropagation()
-        console.log('edit')
     }
     const card = () => {
         console.log('card')
@@ -35,7 +45,6 @@ const TodoItem = ({ id, title, description, getTodos }) => {
                         <AiFillDelete className='del-icon' />
                     </button>
                     <button className="todo__change" onClick={edit}>
-                        {/* AiFillDelete */}
                         <AiFillEdit className='edit-icon' />
                     </button>
                 </div>

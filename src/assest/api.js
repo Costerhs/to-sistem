@@ -13,9 +13,9 @@ let accessToken = getCookie('token')?.access
 const instance = axios.create({
     baseURL: `https://todolistapi.pythonanywhere.com/api/`
 });
-const header = { 'Authorization': `Bearer ${accessToken}` }
+let header = { 'Authorization': `Bearer ${accessToken}` }
 const userId = getCookie('user')?.id;
-// console.log(accessToken)
+
 export const userApi = {
     registration(data, func) {
         return instance.post('user/', data)
@@ -39,6 +39,10 @@ export const userApi = {
     },
     getToken(name, password) {
         return instance.post('token/', { username: name, password: password })
+    },
+    refresh() {
+        return instance.post('token/refresh/', { "refresh": `${getCookie('token').refresh}` })
+            .then(res => res.data.access)
     }
 }
 
@@ -50,7 +54,7 @@ export const todoApi = {
             })
             .catch(res => {
                 if (res.response.status === 401) {
-                    handleAuthError()
+                    return handleAuthError(this.getTodos)
                 }
             })
     },
@@ -58,36 +62,44 @@ export const todoApi = {
         return instance.get(`todo/${id}/`, { headers: header })
             .then(res => res.data).catch(res => {
                 if (res.response.status === 401) {
-                    handleAuthError()
+                    return handleAuthError(this.getTodo, id)
                 }
             })
     },
     delTodo(id) {
         return instance.delete(`todo/${id}/`, { headers: header }).catch(res => {
             if (res.response.status === 401) {
-                handleAuthError()
+                return handleAuthError(this.delTodo, id)
             }
         })
     },
-    postTodo(data) {
-        let todo = { ...data, user: userId, date: getData() }
-        console.log(todo)
+    postTodo(data, getTodos) {
+        let todo = { ...data, user: getCookie('user')?.id, date: getData() }
         return instance.post(`todo/`, todo, { headers: header }).catch(res => {
             if (res.response.status === 401) {
-                handleAuthError()
+                return handleAuthError(this.postTodo, data, getTodos)
             }
         })
+            .then(() => {
+                getTodos()
+            })
     },
-}
-
-function handleAuthError() {
-    if (getCookie('user')) {
-        userApi.getToken(getCookie('user').username, getCookie('password'))
-            .then(res => {
-                setCookie('token', res.data)
-                accessToken = getCookie('token').access
-                console.log(this)
+    editTodo(data, id, getTodos) {
+        return instance.patch(`todo/${id}/`, data, { headers: header })
+            .catch(res => {
+                if (res.response.status === 401) {
+                    return handleAuthError(this.editTodo, data, id, getTodos)
+                }
             })
     }
+}
 
+async function handleAuthError(func, ...atr) {
+    if (getCookie('user')) {
+        let newToken;
+        await userApi.refresh()
+            .then(res => newToken = res)
+        header = { 'Authorization': `Bearer ${newToken}` }
+        return func(...atr)
+    }
 }
