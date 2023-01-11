@@ -1,0 +1,33 @@
+.head {
+    border-bottom:1px solid white;
+    padding: 15px 0px;
+    .container {
+        display: flex;
+        justify-content: space-between;
+        .head__btns {
+            display: flex;
+            gap: 8px;
+            .head__btn {
+                border: 0;
+                border-radius: 10px;
+                padding: 0 10px;
+                font-size: 14px;
+                text-decoration: none;
+            }
+           .head__admin {
+            color: black;
+            background: greenyellow;
+            display: flex;
+            align-items: center;
+           }
+           .head__log {
+            color: white;
+            background: red;
+           }
+        }
+        .head__name{
+            color: white;
+            font-size: 20px;
+        }
+    }
+}
