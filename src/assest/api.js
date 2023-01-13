@@ -1,20 +1,12 @@
 import axios from "axios"
 import { getCookie, getData, setCookie } from "./defFunction"
 import { default as modal } from 'sweetalert2';
-/*
-user+
-token+
-todo get all+
-todo get 1+
-t delete+
-t updeta+
-t post*/
+
 let accessToken = getCookie('token')?.access
 const instance = axios.create({
     baseURL: `https://todolistapi.pythonanywhere.com/api/`
 });
 let header = { 'Authorization': `Bearer ${accessToken}` }
-const userId = getCookie('user')?.id;
 
 export const userApi = {
     registration(data, func) {

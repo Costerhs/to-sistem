@@ -5,10 +5,13 @@ import { todoApi } from '../../assest/api';
 import { useEffect, useState } from 'react';
 import { getFilled } from '../../assest/defFunction';
 import { default as modal } from 'sweetalert2';
+import { useLocation } from 'react-router-dom';
 
 const Modal = ({ setToggle, getTodos, toggle, setIsLoad }) => {
     const [todo, setTodo] = useState();
-    const isNumber = typeof toggle === 'number'
+    const isNumber = typeof toggle === 'number';
+    const isAdmin = useLocation().pathname.indexOf('admin');
+
     const {
         register,
         formState: { errors },
@@ -47,6 +50,7 @@ const Modal = ({ setToggle, getTodos, toggle, setIsLoad }) => {
                 .then(res => setTodo(res))
             setIsLoad(false)
         }
+        console.log(isAdmin)
     }, [])
     return (
         <div className='modal'>
@@ -57,16 +61,17 @@ const Modal = ({ setToggle, getTodos, toggle, setIsLoad }) => {
                 </div>
                 <div className="modal__item">
                     <label htmlFor="title" className="modal__label lable__title">Title</label>
-                    <input type="text" placeholder={todo?.title && todo.title} className="modal__input input__title" {...register('title', { required: 'это поле обязательна', maxLength: { value: 55, message: 'максимум 55 символов' } })} />
+                    <input type="text" value={isAdmin <= 0 && todo?.title ? todo.title : ''} placeholder={todo?.title && todo.title} className="modal__input input__title" {...register('title', { required: 'это поле обязательна', maxLength: { value: 55, message: 'максимум 55 символов' } })} />
                     {errors?.title?.message && <p className="form__error">{errors?.title.message}</p>}
                 </div>
                 <div className="modal__item">
                     <label htmlFor="description" className="modal__label lable__description">Description</label>
-                    <textarea type="text" placeholder={todo?.description && todo.description} className="modal__input textarea__description" {...register('description')} />
+                    <textarea type="text" value={isAdmin <= 0 && todo?.description ? todo.description : ''} placeholder={todo?.description && todo.description} className="modal__input textarea__description" {...register('description')} />
                 </div>
-                <div className="modal__btn">
+                {isAdmin <= 0 && <p className='modal__isAdmin'>Чтобы изменить у вас должен быть статус администратора</p>}
+                {isAdmin > 0 && <div className="modal__btn">
                     <button type='submit'>Submit</button>
-                </div>
+                </div>}
             </form>
         </div>
     )

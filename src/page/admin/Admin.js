@@ -10,7 +10,7 @@ const Admin = () => {
     const [isLoad, setIsLoad] = useState(false);
 
     const getTodos = async () => {
-        // setIsLoad(true)
+        setIsLoad(true)
         await todoApi.getTodos()
             .then(res => setTodos(res))
         setIsLoad(false)
@@ -19,7 +19,7 @@ const Admin = () => {
         <div className='admin'>
             {toggle && <Modal setIsLoad={setIsLoad} getTodos={getTodos} toggle={toggle} setToggle={setToggle} />}
             <div className="container">
-                <TodoList setToggle={setToggle} getTodos={getTodos} todos={todos} />
+                <TodoList admin setToggle={setToggle} getTodos={getTodos} todos={todos} />
                 <div className="admin__add">
                     <button onClick={() => setToggle(true)}>
                         Добавить задачу

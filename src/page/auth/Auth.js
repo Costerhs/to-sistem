@@ -9,25 +9,35 @@ const Auth = () => {
     const [isSignUp, setIsSignUp] = useState(true);
     const [userData, setUserData] = useState({ username: '', email: '', password: '' });
     const [isLoad, setIsLoad] = useState(false);
+    const [errors, setErrors] = useState([]);
     const navigate = useNavigate();
 
-    const postData = () => {
+    const postData = async () => {
         setIsLoad(true)
         if (isSignUp) {
-            userApi.registration(userData, setIsLoad);
+            await userApi.registration(userData, setIsLoad)
+                .catch(res => {
+                    let errorMessage = res.response.data
+                    let result = [].concat(...Object.values(errorMessage));
+                    setErrors(result)
+                    setIsLoad(false)
+                })
         } else {
-            userApi.getToken(userData.username, userData.password)
+            await userApi.getToken(userData.username, userData.password)
                 .then(res => {
                     setCookie('token', res.data)
                     userApi.setUserData(userData.username, setIsLoad);
                     navigate('/')
                 })
-            //так как токен меняется каждые 5 минут я буду хранить пароль в куки и при ошибках заново получать токен
-            //другого варианта получить пароль нету
-            setCookie('password', userData.password)
+                .catch(res => {
+                    setErrors(['incorrect password or username, please try again'])
+                    setIsLoad(false)
+                })
         }
     }
-
+    useEffect(() => {
+        setErrors([])
+    }, [isSignUp])
     return (
         <div className="login">
             <div className="container">
@@ -43,16 +53,21 @@ const Auth = () => {
                             <label htmlFor="login" className="login__label">SIGN UP </label>
                         </div>
                     </div>
+
                     {Object.entries(userData).map((el, index) => {
                         let key = el[0];
                         if (el[0] == 'email' && !isSignUp) return null
 
                         return <div className="login__user" key={index}>
-                            <input type="text" value={userData[key]} onChange={(event) => setUserData(elem => elem = { ...userData, [key]: event.target.value })} required className="login__inp" id={key} />
-                            <div className="error-text"></div>
+                            <input type={el[0] == 'password' ? 'password' : "text"} value={userData[key]} onChange={(event) => setUserData(elem => elem = { ...userData, [key]: event.target.value })} required className="login__inp" id={key} />
                             <label htmlFor={key} className="user__label">{key}</label>
                         </div>
                     })}
+
+                    {errors.length > 0 && errors.map((el, index) => {
+                        return <p className='login__error-message' key={index}>{el}</p>
+                    })}
+
                     <button type='button' onClick={postData} className="login__submit">SEND</button>
                 </form>
 

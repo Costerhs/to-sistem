@@ -4,7 +4,7 @@ import { todoApi } from '../../../assest/api';
 import { default as modal } from 'sweetalert2';
 import { BiShowAlt } from "react-icons/bi";
 
-const TodoItem = ({ id, title, description, getTodos, setToggle }) => {
+const TodoItem = ({ getTodos, setToggle, admin, data }) => {
     const delTodo = (e) => {
         modal.fire({
             title: 'Вы уверены?',
@@ -16,7 +16,7 @@ const TodoItem = ({ id, title, description, getTodos, setToggle }) => {
             confirmButtonText: 'Да, удалить!'
         }).then((result) => {
             if (result.isConfirmed) {
-                todoApi.delTodo(id)
+                todoApi.delTodo(data.id)
                     .then(() => {
                         getTodos()
                         modal.fire(
@@ -30,27 +30,33 @@ const TodoItem = ({ id, title, description, getTodos, setToggle }) => {
         e.stopPropagation()
     }
     const edit = (e) => {
-        setToggle(id)
+        setToggle(data.id)
         e.stopPropagation()
     }
-    const card = () => {
-        console.log('card')
-    }
+
     return (
-        <div className="todo" onClick={card}>
+        <div className="todo" >
             <div className="todo__top">
-                <div className="todo__title">{title}</div>
+                <div className="todo__title">{data.title}</div>
                 <div className="todo__btns">
-                    <button className="todo__del" onClick={delTodo}>
+                    {admin && <><button className="todo__del" onClick={delTodo}>
                         <AiFillDelete className='del-icon' />
                     </button>
-                    <button className="todo__change" onClick={edit}>
-                        <AiFillEdit className='edit-icon' />
+                        <button className="todo__change" onClick={edit}>
+                            <AiFillEdit className='edit-icon' />
+                        </button></>}
+                    <button className="todo__show" onClick={edit}>
+                        <BiShowAlt className='show-icon' />
                     </button>
                 </div>
             </div>
             <div className="todo__text">
-                {description}
+                <div className="todo__description">
+                    {data.description}
+                </div>
+                <div className="todo__date">
+                    {data.date}
+                </div>
             </div>
         </div>
     )

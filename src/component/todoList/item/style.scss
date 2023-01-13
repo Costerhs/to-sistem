@@ -34,18 +34,46 @@
                 .del-icon {
                     color: white;
                 }
+                &:hover {
+                    background-color: rgb(214, 74, 74);
+                }
             }
             .todo__change {
                 background: greenyellow;
                 .edit-icon {
                     color: black;
                 }
+                &:hover {
+                    background-color: rgb(158, 218, 68);
+                }
+            }
+            .todo__show {
+                background: none;
+                .show-icon {
+                    color: black;
+                    font-size: 16px;
+                }
+                &:hover {
+                    background-color: rgb(71, 72, 69);
+                    .show-icon {
+                        color: rgb(255, 255, 255);
+                    }
+                }
             }
         }
     }
     .todo__text {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .todo__description {
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                width: 70%;
+            }
+            .todo__date {
+                font-size: 12px;
+            }
     }
 }
