@@ -50,7 +50,6 @@ const Modal = ({ setToggle, getTodos, toggle, setIsLoad }) => {
                 .then(res => setTodo(res))
             setIsLoad(false)
         }
-        console.log(isAdmin)
     }, [])
     return (
         <div className='modal'>
@@ -61,12 +60,12 @@ const Modal = ({ setToggle, getTodos, toggle, setIsLoad }) => {
                 </div>
                 <div className="modal__item">
                     <label htmlFor="title" className="modal__label lable__title">Title</label>
-                    <input type="text" value={isAdmin <= 0 && todo?.title ? todo.title : ''} placeholder={todo?.title && todo.title} className="modal__input input__title" {...register('title', { required: 'это поле обязательна', maxLength: { value: 55, message: 'максимум 55 символов' } })} />
+                    <input type="text" placeholder={todo?.title && todo.title} className="modal__input input__title" {...register('title', { required: !isNumber ? 'это поле обязательна' : '', maxLength: { value: 55, message: 'максимум 55 символов' } })} />
                     {errors?.title?.message && <p className="form__error">{errors?.title.message}</p>}
                 </div>
                 <div className="modal__item">
                     <label htmlFor="description" className="modal__label lable__description">Description</label>
-                    <textarea type="text" value={isAdmin <= 0 && todo?.description ? todo.description : ''} placeholder={todo?.description && todo.description} className="modal__input textarea__description" {...register('description')} />
+                    <textarea type="text" placeholder={todo?.description && todo.description} className="modal__input textarea__description" {...register('description')} />
                 </div>
                 {isAdmin <= 0 && <p className='modal__isAdmin'>Чтобы изменить у вас должен быть статус администратора</p>}
                 {isAdmin > 0 && <div className="modal__btn">

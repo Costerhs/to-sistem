@@ -1,5 +1,4 @@
 import './style.scss';
-import React, { useEffect } from 'react'
 import { deleteCookie, getCookie } from '../../assest/defFunction';
 import { NavLink, useNavigate } from 'react-router-dom';
 
@@ -11,10 +10,7 @@ const Header = () => {
         navigate('/auth')
         window.location.reload();
     }
-    useEffect(() => {
-        console.log(getCookie('user'))
-        console.log(getCookie('token'))
-    }, [])
+
     return (
         <div className='head'>
             <div className="container">
